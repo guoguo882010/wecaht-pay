@@ -1,0 +1,21 @@
+{
+  "name": "guoguo882010/wecaht-pay",
+  "description": "A WeChat Pay SDK and helper for seamless payment integration",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "47088845",
+      "email": "47088845@qq.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "RSHDSDK\\WechatPay\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.1",
+    "ext-json": "*"
+  }
+}
