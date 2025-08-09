@@ -6,6 +6,10 @@ use RSHDSDK\WechatPay\Auth;
 use RSHDSDK\WechatPay\Config;
 use RSHDSDK\WechatPay\HttpClient;
 
+/**
+ * JSAPI支付，提供商户在微信客户端内部浏览器网页中使用微信支付收款的能力。
+ * 在微信内使用浏览器访问或者小程序访问支付页面，使用jsapi调起支付
+ */
 class JSAPI
 {
     /**
@@ -44,12 +48,11 @@ class JSAPI
 
     public function getPrepayId()
     {
-        $a = new HttpClient();
-        $b = new Auth('POST',$this->path, $this->config, $this->body);
-        dump($b->getJoinStr());
-        dump($b->getSignBase64());
-        $header[] = $b->getSignHeader();
+        $http = new HttpClient();
+        $auth = new Auth('POST',$this->path, $this->config, $this->body);
 
-        dump($a->post($this->url, $this->body,$header));
+        $header[] = $auth->getSignHeader();
+
+        dump($http->post($this->url, $this->body,$header));
     }
 }

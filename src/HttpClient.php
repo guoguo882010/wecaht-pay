@@ -18,8 +18,8 @@ class HttpClient
      */
     public function request($method, $url, $body = null, array $headers = [], array $options = [])
     {
-        // 准备请求体
-        $bodyStr = $body ? json_encode($body, JSON_UNESCAPED_UNICODE) : '';
+        // 准备请求体，这里必须要和生成签名的时候一模一样
+        $bodyStr = $body ? json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '';
 
         // 设置默认头
         $defaultHeaders = [
