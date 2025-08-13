@@ -12,27 +12,12 @@ use RSHDSDK\WechatPay\HttpClient;
  * 文档地址：
  * https://pay.weixin.qq.com/doc/v3/merchant/4012791903
  */
-class Refund
+class Refund extends API
 {
     /**
      * @var string
      */
-    protected $domain = "https://api.mch.weixin.qq.com";
-
-    /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var string
-     */
     protected $path = '/v3/refund/domestic/refunds';
-
-    /**
-     * @var Config
-     */
-    protected $config;
 
     /**
      * @var array
@@ -40,21 +25,32 @@ class Refund
     protected $body;
 
     /**
-     * @param array $config
+     * @param Config $config
      * @param array $body
      * @throws Exception
      */
-    public function __construct(array $config, array $body)
+    public function __construct(Config $config, array $body)
     {
-        $this->url = $this->domain . $this->path;
+        $this->requestUrl = $this->wechatPayDomain . $this->path;
 
-        $this->config = new Config($config);
+        $this->wechatPayConfig = $config;
 
-        $transaction_id = $body['transaction_id'] ?? '';
-        $out_trade_no = $body['out_trade_no'] ?? '';
-        $out_refund_no = $body['out_refund_no'] ?? '';
-        $total = $body['amount']['total'] ?? '';
-        $currency = $body['amount']['currency'] ?? '';
+        $this->body = $body;
+
+        $this->verify();
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    protected function verify()
+    {
+        $transaction_id = $this->body['transaction_id'] ?? '';
+        $out_trade_no = $this->body['out_trade_no'] ?? '';
+        $out_refund_no = $this->body['out_refund_no'] ?? '';
+        $total = $this->body['amount']['total'] ?? '';
+        $currency = $this->body['amount']['currency'] ?? '';
 
         if (empty($transaction_id) && empty($out_trade_no)) {
             throw new Exception('transaction_id 和 out_trade_no 必须二选一');
@@ -73,19 +69,17 @@ class Refund
         }
 
         if (empty($currency)) {
-            $body['amount']['currency'] = 'CNY';
+            $this->body['amount']['currency'] = 'CNY';
         }
-
-        $this->body = $body;
     }
 
     public function requestRefund()
     {
         $http = new HttpClient();
-        $auth = new Auth('POST',$this->path, $this->config, $this->body);
+        $auth = new Auth('POST',$this->path, $this->wechatPayConfig, $this->body);
 
         $header[] = $auth->getSignHeader();
 
-        dump($http->post($this->url, $this->body,$header));
+        return $http->post($this->requestUrl, $this->body,$header);
     }
 }

@@ -13,38 +13,23 @@ use RSHDSDK\WechatPay\HttpClient;
  * 文档
  * https://pay.weixin.qq.com/doc/v3/merchant/4012791904
  */
-class QueryRefundByOutRefundNo
+class QueryRefundByOutRefundNo extends API
 {
-    /**
-     * @var string
-     */
-    protected $domain = "https://api.mch.weixin.qq.com";
-
-    /**
-     * @var string
-     */
-    protected $url;
-
     /**
      * @var string
      */
     protected $path = '/v3/refund/domestic/refunds/';
 
     /**
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * @var string
      */
     protected $outTradeNo;
 
-    public function __construct(array $config, $outTradeNo)
+    public function __construct(Config $config, $outTradeNo)
     {
-        $this->config = new Config($config);
+        $this->wechatPayConfig = $config;
 
-        $this->url = $this->domain . $this->path . $outTradeNo;
+        $this->requestUrl = $this->wechatPayDomain . $this->path . $outTradeNo;
 
         $this->outTradeNo = $outTradeNo;
     }
@@ -52,10 +37,10 @@ class QueryRefundByOutRefundNo
     public function getRefundDetail()
     {
         $http = new HttpClient();
-        $auth = new Auth('GET',$this->path . $this->outTradeNo, $this->config);
+        $auth = new Auth('GET',$this->path . $this->outTradeNo, $this->wechatPayConfig);
 
         $header[] = $auth->getSignHeader();
 
-        dump($http->get($this->url,$header));
+        return $http->get($this->requestUrl,$header);
     }
 }

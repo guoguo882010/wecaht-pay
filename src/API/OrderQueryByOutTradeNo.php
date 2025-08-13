@@ -6,40 +6,23 @@ use RSHDSDK\WechatPay\Auth;
 use RSHDSDK\WechatPay\Config;
 use RSHDSDK\WechatPay\HttpClient;
 
-class OrderQueryByOutTradeNo
+class OrderQueryByOutTradeNo extends API
 {
-    /**
-     * @var string
-     */
-    protected $domain = "https://api.mch.weixin.qq.com";
-
-    /**
-     * @var string
-     */
-    protected $url;
-
     /**
      * @var string
      */
     protected $path = '/v3/pay/transactions/out-trade-no/';
 
     /**
-     * @var Config
-     */
-    protected $config;
-
-    /**
      * @var string
      */
     protected $outTradeNo;
 
-    public function __construct(array $config, $outTradeNo)
+    public function __construct(Config $config, $outTradeNo)
     {
+        $this->wechatPayConfig = $config;
 
-
-        $this->config = new Config($config);
-
-        $this->url = $this->domain . $this->path . $outTradeNo . '?mchid=' . $this->config->getMerchantId();
+        $this->requestUrl = $this->wechatPayDomain . $this->path . $outTradeNo . '?mchid=' . $this->wechatPayConfig->getMerchantId();
 
         $this->outTradeNo = $outTradeNo;
     }
@@ -47,10 +30,10 @@ class OrderQueryByOutTradeNo
     public function getOrderDetail()
     {
         $http = new HttpClient();
-        $auth = new Auth('GET',$this->path . $this->outTradeNo . '?mchid=' . $this->config->getMerchantId(), $this->config);
+        $auth = new Auth('GET',$this->path . $this->outTradeNo . '?mchid=' . $this->wechatPayConfig->getMerchantId(), $this->wechatPayConfig);
 
         $header[] = $auth->getSignHeader();
 
-        dump($http->get($this->url,$header));
+        return $http->get($this->requestUrl,$header);
     }
 }
