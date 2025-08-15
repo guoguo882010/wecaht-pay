@@ -34,8 +34,8 @@ class WechatPay
 
     /**
      * 调起小程序支付
-     * @param string $appId
-     * @param array $body
+     * @param string $appId 小程序appid
+     * @param array $body 订单数据
      * @return array
      * @throws Exception
      */
