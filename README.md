@@ -2,6 +2,11 @@
 
 ---
 
+**安装**
+```shell
+composer require guoguo882010/wecaht-pay
+```
+
 **使用方法**
 
 ```php
