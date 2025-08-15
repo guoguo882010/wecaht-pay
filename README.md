@@ -32,7 +32,7 @@ $body = [
     'mchid'        => '333333',//商户号
     'description'  => 'Image形象店-深圳腾大-QQ公仔',
     'out_trade_no' => '121775250128',//商户订单号
-    'notify_url'   => 'https://www.weixin.qq.com/wxpay/pay.php',//毁掉地址
+    'notify_url'   => 'https://www.weixin.qq.com/wxpay/pay.php',//回调地址
     'amount'       => [
         'total'    => 100,//金额
         'currency' => 'CNY',//货币固定是CNY
@@ -52,7 +52,7 @@ $body = [
     'notify_url'     => '回调地址',
     'amount' => [
             'total'=>100//退款金额
-            'currency'=>'CNY'//固定CNY
+            'currency'=>'CNY'//货币固定是CNY
         ],
 ];
 $pay->refund($body);
