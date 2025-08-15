@@ -2,9 +2,7 @@
 
 namespace RSHDSDK\WechatPay\API;
 
-use RSHDSDK\WechatPay\Auth;
-use RSHDSDK\WechatPay\Config;
-use RSHDSDK\WechatPay\HttpClient;
+use Exception;
 
 /**
  * 关闭订单
@@ -13,28 +11,37 @@ use RSHDSDK\WechatPay\HttpClient;
  */
 class CloseOrder extends API
 {
+    /**
+     * @var string
+     */
     protected $path = '/v3/pay/transactions/out-trade-no/%s/close';
 
-    public function __construct(Config $config, string $out_trade_no)
+    /**
+     * 商户订单号
+     * @var string
+     */
+    protected $outTradeNo;
+
+    /**
+     * @param string $out_trade_no
+     * @return void
+     * @throws Exception
+     */
+    public function requestClose(string $out_trade_no)
     {
-        $this->path = sprintf($this->path, $out_trade_no);
+        $this->outTradeNo = $out_trade_no;
 
-        $this->requestUrl = $this->wechatPayDomain . $this->path;
-
-        $this->wechatPayConfig = $config;
-    }
-
-    public function requestClose()
-    {
         $body = [
             'mchid' => $this->wechatPayConfig->getMerchantId(),
         ];
 
-        $http = new HttpClient();
-        $auth = new Auth('POST',$this->path, $this->wechatPayConfig, $body);
+        $header[] = $this->getPostSignHeader($this->getPath(), $body);
 
-        $header[] = $auth->getSignHeader();
+        $this->http->post($this->getRequestUrl(), $body, $header);
+    }
 
-        $http->post($this->requestUrl, $body,$header);
+    protected function getPath()
+    {
+        return sprintf($this->path, $this->outTradeNo);
     }
 }

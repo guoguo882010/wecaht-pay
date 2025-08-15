@@ -3,9 +3,6 @@
 namespace RSHDSDK\WechatPay\API;
 
 use Exception;
-use RSHDSDK\WechatPay\Auth;
-use RSHDSDK\WechatPay\Config;
-use RSHDSDK\WechatPay\HttpClient;
 
 /**
  * 微信退款
@@ -23,22 +20,6 @@ class Refund extends API
      * @var array
      */
     protected $body;
-
-    /**
-     * @param Config $config
-     * @param array $body
-     * @throws Exception
-     */
-    public function __construct(Config $config, array $body)
-    {
-        $this->requestUrl = $this->wechatPayDomain . $this->path;
-
-        $this->wechatPayConfig = $config;
-
-        $this->body = $body;
-
-        $this->verify();
-    }
 
     /**
      * @return void
@@ -73,13 +54,24 @@ class Refund extends API
         }
     }
 
-    public function requestRefund()
+    /**
+     * @param array $body
+     * @return array|string
+     * @throws Exception
+     */
+    public function requestRefund(array $body)
     {
-        $http = new HttpClient();
-        $auth = new Auth('POST',$this->path, $this->wechatPayConfig, $this->body);
+        $this->body = $body;
 
-        $header[] = $auth->getSignHeader();
+        $this->verify();
 
-        return $http->post($this->requestUrl, $this->body,$header);
+        $header[] = $this->getPostSignHeader($this->path, $this->body);
+
+        return $this->http->post($this->getRequestUrl(), $this->body, $header);
+    }
+
+    protected function getPath()
+    {
+        return $this->path;
     }
 }

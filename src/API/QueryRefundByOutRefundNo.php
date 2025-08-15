@@ -2,9 +2,7 @@
 
 namespace RSHDSDK\WechatPay\API;
 
-use RSHDSDK\WechatPay\Auth;
-use RSHDSDK\WechatPay\Config;
-use RSHDSDK\WechatPay\HttpClient;
+use Exception;
 
 /**
  * 提交退款申请后，推荐每间隔1分钟调用该接口查询一次退款状态，若超过5分钟仍是退款处理中状态，
@@ -18,29 +16,29 @@ class QueryRefundByOutRefundNo extends API
     /**
      * @var string
      */
-    protected $path = '/v3/refund/domestic/refunds/';
+    protected $path = '/v3/refund/domestic/refunds/%s';
 
     /**
      * @var string
      */
     protected $outTradeNo;
 
-    public function __construct(Config $config, $outTradeNo)
+    /**
+     * @param string $outTradeNo
+     * @return array
+     * @throws Exception
+     */
+    public function getRefundDetail(string $outTradeNo)
     {
-        $this->wechatPayConfig = $config;
-
-        $this->requestUrl = $this->wechatPayDomain . $this->path . $outTradeNo;
-
         $this->outTradeNo = $outTradeNo;
+
+        $header[] = $this->getGetSignHeader($this->getPath());
+
+        return $this->http->get($this->getRequestUrl(), $header);
     }
 
-    public function getRefundDetail()
+    protected function getPath()
     {
-        $http = new HttpClient();
-        $auth = new Auth('GET',$this->path . $this->outTradeNo, $this->wechatPayConfig);
-
-        $header[] = $auth->getSignHeader();
-
-        return $http->get($this->requestUrl,$header);
+        return sprintf($this->path, $this->outTradeNo);
     }
 }

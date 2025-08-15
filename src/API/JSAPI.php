@@ -2,13 +2,13 @@
 
 namespace RSHDSDK\WechatPay\API;
 
-use RSHDSDK\WechatPay\Auth;
-use RSHDSDK\WechatPay\Config;
-use RSHDSDK\WechatPay\HttpClient;
+use Exception;
 
 /**
  * JSAPI支付，提供商户在微信客户端内部浏览器网页中使用微信支付收款的能力。
  * 在微信内使用浏览器访问或者小程序访问支付页面，使用jsapi调起支付
+ *
+ * https://pay.weixin.qq.com/doc/v3/merchant/4012791897
  */
 class JSAPI extends API
 {
@@ -18,26 +18,21 @@ class JSAPI extends API
     protected $path = '/v3/pay/transactions/jsapi';
 
     /**
-     * @var array
+     * @param array $body
+     * @return array|string
+     * @throws Exception
      */
-    protected $body;
-
-    public function __construct(Config $config, array $body)
+    public function getPrepayId(array $body)
     {
-        $this->requestUrl = $this->wechatPayDomain . $this->path;
+        $header[] = $this->getPostSignHeader($this->getPath(), $body);
 
-        $this->wechatPayConfig = $config;
+        $result = $this->http->post($this->getRequestUrl(), $body, $header);
 
-        $this->body = $body;
+        return $result['prepay_id'] ?? '';
     }
 
-    public function getPrepayId()
+    protected function getPath()
     {
-        $http = new HttpClient();
-        $auth = new Auth('POST',$this->path, $this->wechatPayConfig, $this->body);
-
-        $header[] = $auth->getSignHeader();
-
-        return $http->post($this->requestUrl, $this->body,$header);
+        return $this->path;
     }
 }

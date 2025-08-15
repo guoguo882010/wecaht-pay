@@ -2,38 +2,40 @@
 
 namespace RSHDSDK\WechatPay\API;
 
-use RSHDSDK\WechatPay\Auth;
-use RSHDSDK\WechatPay\Config;
-use RSHDSDK\WechatPay\HttpClient;
+use Exception;
 
+/**
+ * 微信支付订单号查询订单
+ * https://pay.weixin.qq.com/doc/v3/merchant/4012791899
+ */
 class OrderQueryByTransactionId extends API
 {
     /**
      * @var string
      */
-    protected $path = '/v3/pay/transactions/id/';
+    protected $path = '/v3/pay/transactions/id/%s?mchid=%s';
 
     /**
      * @var string
      */
     protected $transactionsId;
 
-    public function __construct(Config $config, $transactionsId)
+    /**
+     * @param string $transactionsId
+     * @return array
+     * @throws Exception
+     */
+    public function getOrderDetail(string $transactionsId)
     {
-        $this->wechatPayConfig = $config;
-
-        $this->requestUrl = $this->wechatPayDomain . $this->path . $transactionsId . '?mchid=' . $this->wechatPayConfig->getMerchantId();
-
         $this->transactionsId = $transactionsId;
+
+        $header[] = $this->getGetSignHeader($this->getPath());
+
+        return $this->http->get($this->getRequestUrl(), $header);
     }
 
-    public function getOrderDetail()
+    protected function getPath()
     {
-        $http = new HttpClient();
-        $auth = new Auth('GET',$this->path . $this->transactionsId . '?mchid=' . $this->wechatPayConfig->getMerchantId(), $this->wechatPayConfig);
-
-        $header[] = $auth->getSignHeader();
-
-        return $http->get($this->requestUrl,$header);
+        return sprintf($this->path, $this->transactionsId, $this->wechatPayConfig->getMerchantId());
     }
 }
