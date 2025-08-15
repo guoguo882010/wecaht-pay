@@ -56,7 +56,7 @@ class Refund extends API
 
     /**
      * @param array $body
-     * @return array|string
+     * @return array
      * @throws Exception
      */
     public function requestRefund(array $body)
